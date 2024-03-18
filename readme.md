@@ -23,3 +23,9 @@ To test security and runtime performance with a whitelisted dll list.
 Certain software does not handle unexpected unload events.
 
 Certain software functionality does not work 100% with frequent unload events.
+
+## Compiling Example
+
+```
+g++ main.cpp -static -o main.exe
+```
