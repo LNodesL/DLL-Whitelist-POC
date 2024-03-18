@@ -5,24 +5,19 @@
 #include <string>
 #include "Sleep.h"
 
-// Function to get the file name of the current executable
 std::string GetExecutableFileName() {
     char szFileName[MAX_PATH];
     GetModuleFileNameA(NULL, szFileName, MAX_PATH);
     return szFileName;
 }
 
-// This function is no longer needed
-// std::wstring StringToWString(const std::string& s) { ... }
-
 bool UnloadDllByName(std::string dllName) {
     HMODULE hModule = GetModuleHandleA(dllName.c_str()); // Use ANSI version directly
     if (hModule == NULL) {
-        // std::cerr << "DLL not found: " << dllName << std::endl;
+        std::cerr << "DLL not found: " << dllName << std::endl;
         return false;
     }
 
-    // Attempt to unload the DLL
     if (FreeLibrary(hModule)) {
         std::cout << "DLL unloaded successfully: " << dllName << std::endl << std::endl;
         return true;
@@ -33,12 +28,12 @@ bool UnloadDllByName(std::string dllName) {
 }
 
 void ForceDllWhitelist(int intervalMilliseconds = 500) {
-    while (true) { // Infinite loop to continuously check for unknown DLLs
+    while (true) {
         DWORD processId = GetCurrentProcessId();
         HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
         if (hProcess == NULL) {
             std::cerr << "Failed to open process." << std::endl << std::endl;
-            continue; // Skip to the next iteration instead of returning
+            continue;
         }
 
         HMODULE hModules[1024];
