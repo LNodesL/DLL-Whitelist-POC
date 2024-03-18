@@ -12,21 +12,11 @@ std::string GetExecutableFileName() {
     return szFileName;
 }
 
-// Helper function to convert std::string to std::wstring
-std::wstring StringToWString(const std::string& s) {
-    int len;
-    int slength = (int)s.length() + 1;
-    len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
-    wchar_t* buf = new wchar_t[len];
-    MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-    std::wstring r(buf);
-    delete[] buf;
-    return r;
-}
+// This function is no longer needed
+// std::wstring StringToWString(const std::string& s) { ... }
 
 bool UnloadDllByName(std::string dllName) {
-    std::wstring wideDllName = StringToWString(dllName);
-    HMODULE hModule = GetModuleHandleW(wideDllName.c_str());
+    HMODULE hModule = GetModuleHandleA(dllName.c_str()); // Use ANSI version directly
     if (hModule == NULL) {
         // std::cerr << "DLL not found: " << dllName << std::endl;
         return false;
@@ -57,13 +47,13 @@ void ForceDllWhitelist(int intervalMilliseconds = 500) {
             int moduleCount = cbNeeded / sizeof(HMODULE);
 
             std::vector<std::string> knownModules = {
-                std::string("ntdll.dll"),
-                std::string("KERNEL32.DLL"),
-                std::string("KERNELBASE.dll"),
-                std::string("apphelp.dll"),
-                std::string("ucrtbase.dll"),
-                std::string("msvcrt.dll"),
-                std::string("kernel.appcore.dll")
+                "ntdll.dll",
+                "KERNEL32.DLL",
+                "KERNELBASE.dll",
+                "apphelp.dll",
+                "ucrtbase.dll",
+                "msvcrt.dll",
+                "kernel.appcore.dll"
             };
 
             knownModules.push_back(GetExecutableFileName());
@@ -84,7 +74,6 @@ void ForceDllWhitelist(int intervalMilliseconds = 500) {
                         std::cout << "Unknown module detected: " << moduleName << std::endl;
                         UnloadDllByName(moduleName);
                     }
-                    
                 }
             }
         } else {
